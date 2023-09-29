@@ -1,0 +1,21 @@
+import discord
+from gen import *
+client = discord.Client(intents=discord.Intents.all())
+
+@client.event
+async def on_ready():   #функция, отражающая готовность бота к работе
+    print(f'вы зарегистрированы, {client.user}')
+    print('ваш пароль', gen_pass(6))
+    print(flip_coin())
+
+@client.event
+async def on_message(message):  #направленна на общение с пользователем
+    if message.author == client.user:
+        return
+    if message.content.startswith('alo'):
+        await message.channel.send('hi')
+    elif message.content.startswith('emoji'):
+        await message.channel.send(gen_emodji())
+    elif message.content.startswith('coin'):
+        await message.chanel.send(flip_coin())
+client.run('MTEzNTIwMDUwMDUxODc1MjM5OA.GVFLr-.HDIv8kEhPR88W54icBUufmD-rN2rn2Qoj_NV8o')
