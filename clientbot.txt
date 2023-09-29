@@ -1,0 +1,58 @@
+import discord
+import random
+import asyncio
+from gen import *
+client = discord.Client(intents=discord.Intents.all())
+
+@client.event
+async def on_ready():   #функция, отражающая готовность бота к работе
+    print(f'вы зарегистрированы, {client.user}')
+    print('ваш пароль', gen_pass(6))
+    print(flip_coin())
+
+@client.event
+async def on_message(message):  #направленна на общение с пользователем
+    if message.author == client.user:
+        return
+    if message.content.startswith('alo'):
+        await message.channel.send('hi')
+    elif message.content.startswith('emoji'):
+        await message.channel.send(gen_emodji())
+    elif message.content.startswith('coin'):
+        await message.chanel.send(flip_coin())
+
+
+class MyClient(discord.Client):
+    async def on_ready(self):
+        print(f'Logged in as {self.user} (ID: {self.user.id})')
+        print('------')
+
+    async def on_message(self, message):
+        if message.author.id == self.user.id:
+            return
+
+        if message.content.startswith('$guess'):
+            await message.channel.send('угадай число между 1  и 10.')
+
+            def is_correct(m):
+                return m.author == message.author and m.content.isdigit()
+
+            answer = random.randint(1, 10)
+
+            try:
+                guess = await self.wait_for('message', check=is_correct, timeout=5.0)
+            except asyncio.TimeoutError:
+                return await message.channel.send(f'слишком долго, ответ: {answer}.')
+
+            if int(guess.content) == answer:
+                await message.channel.send('угадал!')
+            else:
+                await message.channel.send(f'неа, ответ: {answer}.')
+
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+client = MyClient(intents=intents)
+
+client.run('MTEzNTIwMDUwMDUxODc1MjM5OA.GMsP3S.pdUt59v2LDoB-zpOS9BUUJiOsNUw51-Zyvh8tA')
